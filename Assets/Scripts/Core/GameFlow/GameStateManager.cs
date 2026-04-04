@@ -10,6 +10,9 @@ public class GameStateManager : MonoBehaviour
 
     public event Action<GameState, GameState> OnStateChanged;
 
+    private GameState loadingTargetState;
+    private LoadingVisualType loadingVisualType;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -72,5 +75,15 @@ public class GameStateManager : MonoBehaviour
     public bool IsState(GameState state)
     {
         return CurrentState == state;
+    }
+
+    public void StartLoading(GameState targetState)
+    {
+        loadingTargetState = targetState;
+        loadingVisualType = targetState == GameState.MainMenu
+                            ? LoadingVisualType.Boot
+                            : LoadingVisualType.RunStart;
+
+        SetState(GameState.Loading);
     }
 }
