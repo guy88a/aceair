@@ -41,7 +41,7 @@ public class Bootstrapper : MonoBehaviour
         {
             splashTimeReached = true;
             Debug.Log("Splash duration reached.");
-            GameStateManager.Instance.SetState(GameState.Loading);
+            GameStateManager.Instance.StartLoading(GameState.MainMenu);
         }
     }
 }

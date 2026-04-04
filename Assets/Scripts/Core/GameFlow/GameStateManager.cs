@@ -10,8 +10,8 @@ public class GameStateManager : MonoBehaviour
 
     public event Action<GameState, GameState> OnStateChanged;
 
-    private GameState loadingTargetState;
-    private LoadingVisualType loadingVisualType;
+    public GameState LoadingTargetState { get; private set; }
+    public LoadingVisualType LoadingVisualType { get; private set; }
 
     private void Awake()
     {
@@ -79,8 +79,8 @@ public class GameStateManager : MonoBehaviour
 
     public void StartLoading(GameState targetState)
     {
-        loadingTargetState = targetState;
-        loadingVisualType = targetState == GameState.MainMenu
+        LoadingTargetState = targetState;
+        LoadingVisualType = targetState == GameState.MainMenu
                             ? LoadingVisualType.Boot
                             : LoadingVisualType.RunStart;
 
