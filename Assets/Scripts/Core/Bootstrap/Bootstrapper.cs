@@ -6,7 +6,12 @@ public class Bootstrapper : MonoBehaviour
 
     [Header("Persistent References")]
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private Canvas splashCanvas;
+
+    [Header("Splash")]
+    [SerializeField] private float splashDuration = 1.5f;
+
+    private float bootStartTime;
+    private bool splashTimeReached;
 
     private void Awake()
     {
@@ -24,19 +29,19 @@ public class Bootstrapper : MonoBehaviour
             DontDestroyOnLoad(mainCamera.gameObject);
         }
 
-        if (splashCanvas != null)
+        bootStartTime = Time.realtimeSinceStartup;
+    }
+
+    private void Update()
+    {
+        if (splashTimeReached)
+            return;
+
+        if (Time.realtimeSinceStartup - bootStartTime >= splashDuration)
         {
-            DontDestroyOnLoad(splashCanvas.gameObject);
+            splashTimeReached = true;
+            Debug.Log("Splash duration reached.");
+            GameStateManager.Instance.StartLoading(GameState.MainMenu);
         }
-    }
-
-    private void Start()
-    {
-        Initialize();
-    }
-
-    private void Initialize()
-    {
-
     }
 }
