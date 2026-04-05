@@ -51,11 +51,9 @@ public class GameStateManager : MonoBehaviour
                 break;
 
             case GameState.MainMenu:
-                SceneLoader.Instance.LoadScene("MainMenu");
                 break;
 
             case GameState.Run:
-                SceneLoader.Instance.LoadScene("Gameplay");
                 break;
 
             case GameState.Critical:
