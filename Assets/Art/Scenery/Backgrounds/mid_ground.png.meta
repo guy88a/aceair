@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: dac6a3586ada2954a9f86da92bd7ae73
+guid: 398018b932d1fb54e88b98221340d665
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6746767113983949862
-    second: far_ground_2_0
+      213: 3427886871307419347
+    second: mid_ground_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 2
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: far_ground_2_0
+      name: mid_ground_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1350
-        height: 291
+        width: 2380
+        height: 377
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ad303b44e0bae52a0800000000000000
-      internalID: -6746767113983949862
+      spriteID: 3def08e92fc429f20800000000000000
+      internalID: 3427886871307419347
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      far_ground_2_0: -6746767113983949862
+      mid_ground_0: 3427886871307419347
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
