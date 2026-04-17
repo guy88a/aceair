@@ -15,6 +15,7 @@ public sealed class ParallaxLayerController : MonoBehaviour
     [SerializeField] private float speedFactor = 1f;
     [SerializeField] private ParallaxWorld parallaxWorld;
     [SerializeField] private LayerPropSpawner propSpawner;
+    [SerializeField][Min(0f)] private float testScrollSpeed = 2f;
 
     [Header("Roots")]
     [SerializeField] private Transform activeThemeRoot;
@@ -139,8 +140,49 @@ public sealed class ParallaxLayerController : MonoBehaviour
 
     private void UpdateStableLoop()
     {
-        // Base shell only.
-        // Stable looping logic for the active seamless strip will go here.
+        if (activeThemeRoot == null)
+            return;
+
+        if (activeThemeRoot.childCount == 0)
+            return;
+
+        float scrollAmount = testScrollSpeed * speedFactor * Time.deltaTime;
+
+        for (int i = 0; i < activeThemeRoot.childCount; i++)
+            activeThemeRoot.GetChild(i).localPosition += Vector3.left * scrollAmount;
+
+        float cameraLeftEdge = GetCameraLeftEdgeX();
+        float rightMostX = float.MinValue;
+
+        for (int i = 0; i < activeThemeRoot.childCount; i++)
+        {
+            Transform child = activeThemeRoot.GetChild(i);
+
+            if (child.localPosition.x > rightMostX)
+                rightMostX = child.localPosition.x;
+        }
+
+        for (int i = 0; i < activeThemeRoot.childCount; i++)
+        {
+            Transform child = activeThemeRoot.GetChild(i);
+            float stripWidth = GetLoopWidth(child);
+
+            if (stripWidth <= 0f)
+                continue;
+
+            float childRightEdge = child.localPosition.x + stripWidth;
+
+            if (childRightEdge <= cameraLeftEdge)
+            {
+                child.localPosition = new Vector3(
+                    rightMostX + stripWidth,
+                    child.localPosition.y,
+                    child.localPosition.z
+                );
+
+                rightMostX = child.localPosition.x;
+            }
+        }
     }
 
     private bool IsAtSafeSeamPoint()
@@ -202,10 +244,30 @@ public sealed class ParallaxLayerController : MonoBehaviour
         if (content == null || content.IsEmpty || content.SeamlessStripPrefab == null)
             return;
 
-        GameObject instance = Instantiate(content.SeamlessStripPrefab, root);
-        instance.transform.localPosition = content.LocalOffset;
-        instance.transform.localRotation = Quaternion.identity;
-        instance.transform.localScale = Vector3.one;
+        GameObject first = Instantiate(content.SeamlessStripPrefab, root);
+        first.transform.localRotation = Quaternion.identity;
+        first.transform.localScale = Vector3.one;
+
+        float stripWidth = GetLoopWidth(first.transform);
+
+        if (stripWidth <= 0f)
+            return;
+
+        float cameraWidth = GetCameraWorldWidth();
+        float startX = GetCameraLeftEdgeX() + content.LocalOffset.x;
+        float y = content.LocalOffset.y;
+
+        int copiesNeeded = Mathf.Max(2, Mathf.CeilToInt(cameraWidth / stripWidth) + 1);
+
+        first.transform.localPosition = new Vector3(startX, y, 0f);
+
+        for (int i = 1; i < copiesNeeded; i++)
+        {
+            GameObject copy = Instantiate(content.SeamlessStripPrefab, root);
+            copy.transform.localRotation = Quaternion.identity;
+            copy.transform.localScale = Vector3.one;
+            copy.transform.localPosition = new Vector3(startX + (stripWidth * i), y, 0f);
+        }
     }
 
     private void ApplyTransitionContentToRoot(Transform root, LayerTransitionContent content)
@@ -222,6 +284,44 @@ public sealed class ParallaxLayerController : MonoBehaviour
         instance.transform.localPosition = content.LocalOffset;
         instance.transform.localRotation = Quaternion.identity;
         instance.transform.localScale = Vector3.one;
+    }
+
+    private float GetLoopWidth(Transform stripRoot)
+    {
+        if (stripRoot == null)
+            return 0f;
+
+        Renderer[] renderers = stripRoot.GetComponentsInChildren<Renderer>();
+
+        if (renderers == null || renderers.Length == 0)
+            return 0f;
+
+        Bounds bounds = renderers[0].bounds;
+
+        for (int i = 1; i < renderers.Length; i++)
+            bounds.Encapsulate(renderers[i].bounds);
+
+        return bounds.size.x;
+    }
+
+    private float GetCameraWorldWidth()
+    {
+        Camera cam = Camera.main;
+
+        if (cam == null || !cam.orthographic)
+            return 0f;
+
+        return cam.orthographicSize * 2f * cam.aspect;
+    }
+
+    private float GetCameraLeftEdgeX()
+    {
+        Camera cam = Camera.main;
+
+        if (cam == null || !cam.orthographic)
+            return 0f;
+
+        return cam.transform.position.x - (GetCameraWorldWidth() * 0.5f);
     }
 
     private void ClearRoot(Transform root)
