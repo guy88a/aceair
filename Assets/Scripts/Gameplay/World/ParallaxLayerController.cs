@@ -194,17 +194,58 @@ public sealed class ParallaxLayerController : MonoBehaviour
 
     private void StartVisibleSwap()
     {
-        ApplyLayerContentToRoot(incomingThemeRoot, incomingLayerContent);
-        ApplyTransitionContentToRoot(transitionRoot, transitionLayerContent);
+        float nextStartX = GetRootRightEdge(activeThemeRoot);
+
+        ClearRoot(transitionRoot);
+
+        if (transitionLayerContent != null &&
+            !transitionLayerContent.IsEmpty &&
+            transitionLayerContent.TransitionStripPrefab != null)
+        {
+            ApplyTransitionContentToRoot(
+                transitionRoot,
+                transitionLayerContent,
+                nextStartX + transitionLayerContent.LocalOffset.x
+            );
+
+            nextStartX = GetRootRightEdge(transitionRoot);
+        }
+
+        if (incomingLayerContent != null && !incomingLayerContent.IsEmpty)
+        {
+            ApplyLayerContentToRoot(
+                incomingThemeRoot,
+                incomingLayerContent,
+                nextStartX + incomingLayerContent.LocalOffset.x
+            );
+        }
+        else
+        {
+            ClearRoot(incomingThemeRoot);
+        }
 
         currentState = ParallaxLayerState.Transitioning;
     }
 
     private void UpdateTransition()
     {
-        // Base shell only.
-        // Replace this with actual current/transition/incoming movement logic.
-        currentState = ParallaxLayerState.FinalizeNewTheme;
+        float scrollAmount = testScrollSpeed * speedFactor * Time.deltaTime;
+
+        MoveRootChildrenLeft(activeThemeRoot, scrollAmount);
+        MoveRootChildrenLeft(transitionRoot, scrollAmount);
+        MoveRootChildrenLeft(incomingThemeRoot, scrollAmount);
+
+        if (incomingLayerContent == null || incomingLayerContent.IsEmpty || incomingThemeRoot.childCount == 0)
+        {
+            currentState = ParallaxLayerState.FinalizeNewTheme;
+            return;
+        }
+
+        float targetX = GetCameraLeftEdgeX() + incomingLayerContent.LocalOffset.x;
+        float incomingLeftX = GetRootLeftMostX(incomingThemeRoot);
+
+        if (incomingLeftX <= targetX)
+            currentState = ParallaxLayerState.FinalizeNewTheme;
     }
 
     private void FinalizeThemeSwap()
@@ -236,6 +277,17 @@ public sealed class ParallaxLayerController : MonoBehaviour
 
     private void ApplyLayerContentToRoot(Transform root, ThemeLayerContent content)
     {
+        if (content == null)
+        {
+            ClearRoot(root);
+            return;
+        }
+
+        ApplyLayerContentToRoot(root, content, GetCameraLeftEdgeX() + content.LocalOffset.x);
+    }
+
+    private void ApplyLayerContentToRoot(Transform root, ThemeLayerContent content, float startX)
+    {
         if (root == null)
             return;
 
@@ -254,7 +306,6 @@ public sealed class ParallaxLayerController : MonoBehaviour
             return;
 
         float cameraWidth = GetCameraWorldWidth();
-        float startX = GetCameraLeftEdgeX() + content.LocalOffset.x;
         float y = content.LocalOffset.y;
 
         int copiesNeeded = Mathf.Max(2, Mathf.CeilToInt(cameraWidth / stripWidth) + 1);
@@ -272,6 +323,17 @@ public sealed class ParallaxLayerController : MonoBehaviour
 
     private void ApplyTransitionContentToRoot(Transform root, LayerTransitionContent content)
     {
+        if (content == null)
+        {
+            ClearRoot(root);
+            return;
+        }
+
+        ApplyTransitionContentToRoot(root, content, GetCameraLeftEdgeX() + content.LocalOffset.x);
+    }
+
+    private void ApplyTransitionContentToRoot(Transform root, LayerTransitionContent content, float startX)
+    {
         if (root == null)
             return;
 
@@ -281,9 +343,63 @@ public sealed class ParallaxLayerController : MonoBehaviour
             return;
 
         GameObject instance = Instantiate(content.TransitionStripPrefab, root);
-        instance.transform.localPosition = content.LocalOffset;
+        instance.transform.localPosition = new Vector3(startX, content.LocalOffset.y, 0f);
         instance.transform.localRotation = Quaternion.identity;
         instance.transform.localScale = Vector3.one;
+    }
+
+    private void MoveRootChildrenLeft(Transform root, float scrollAmount)
+    {
+        if (root == null)
+            return;
+
+        for (int i = 0; i < root.childCount; i++)
+            root.GetChild(i).localPosition += Vector3.left * scrollAmount;
+    }
+
+    private float GetRootRightEdge(Transform root)
+    {
+        if (root == null || root.childCount == 0)
+            return GetCameraLeftEdgeX();
+
+        float rightEdge = float.MinValue;
+
+        for (int i = 0; i < root.childCount; i++)
+        {
+            Transform child = root.GetChild(i);
+            float width = GetLoopWidth(child);
+
+            if (width <= 0f)
+                continue;
+
+            float childRightEdge = child.localPosition.x + width;
+
+            if (childRightEdge > rightEdge)
+                rightEdge = childRightEdge;
+        }
+
+        if (rightEdge == float.MinValue)
+            return GetCameraLeftEdgeX();
+
+        return rightEdge;
+    }
+
+    private float GetRootLeftMostX(Transform root)
+    {
+        if (root == null || root.childCount == 0)
+            return float.MaxValue;
+
+        float leftMostX = float.MaxValue;
+
+        for (int i = 0; i < root.childCount; i++)
+        {
+            Transform child = root.GetChild(i);
+
+            if (child.localPosition.x < leftMostX)
+                leftMostX = child.localPosition.x;
+        }
+
+        return leftMostX;
     }
 
     private float GetLoopWidth(Transform stripRoot)

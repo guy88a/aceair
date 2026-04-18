@@ -367,6 +367,7 @@ MonoBehaviour:
   speedFactor: 1
   parallaxWorld: {fileID: 811888734}
   propSpawner: {fileID: 1410594779}
+  testScrollSpeed: 2
   activeThemeRoot: {fileID: 1450615124}
   incomingThemeRoot: {fileID: 373788962}
   transitionRoot: {fileID: 378405425}
@@ -604,6 +605,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f512642f896a5204bb84700a3a7ac721, type: 2}
   - {fileID: 11400000, guid: ea726ba49d2c8ff47bce88339f003634, type: 2}
   parallaxWorld: {fileID: 811888734}
+  debugRequestNextTheme: 1
   currentTheme: {fileID: 0}
   pendingTheme: {fileID: 0}
   distanceSinceActivation: 0

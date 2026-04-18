@@ -8,6 +8,9 @@ public sealed class WorldThemeManager : MonoBehaviour
     [SerializeField] private List<ThemeTransitionDefinition> transitions = new();
     [SerializeField] private ParallaxWorld parallaxWorld;
 
+    [Header("Test")]
+    [SerializeField] private bool debugRequestNextTheme;
+
     [Header("Runtime")]
     [SerializeField] private ThemeDefinition currentTheme;
     [SerializeField] private ThemeDefinition pendingTheme;
@@ -41,12 +44,21 @@ public sealed class WorldThemeManager : MonoBehaviour
         parallaxWorld.ApplyInitialTheme(currentTheme);
     }
 
+    private void Update()
+    {
+        if (!debugRequestNextTheme)
+            return;
+
+        debugRequestNextTheme = false;
+        RequestNextTheme();
+    }
+
     public void AddDistance(float deltaDistance)
     {
         if (themeChangeInProgress || currentTheme == null || deltaDistance <= 0f)
             return;
 
-        distanceSinceActivation += deltaDistance;
+        distanceSinceActivation += deltaDistance;   
 
         if (distanceSinceActivation >= distanceTarget)
             RequestNextTheme();
