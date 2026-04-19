@@ -194,35 +194,10 @@ public sealed class ParallaxLayerController : MonoBehaviour
 
     private void StartVisibleSwap()
     {
-        float nextStartX = GetRootRightEdge(activeThemeRoot);
+        float seamX = GetRootRightEdge(activeThemeRoot);
 
-        ClearRoot(transitionRoot);
-
-        if (transitionLayerContent != null &&
-            !transitionLayerContent.IsEmpty &&
-            transitionLayerContent.TransitionStripPrefab != null)
-        {
-            ApplyTransitionContentToRoot(
-                transitionRoot,
-                transitionLayerContent,
-                nextStartX + transitionLayerContent.LocalOffset.x
-            );
-
-            nextStartX = GetRootRightEdge(transitionRoot);
-        }
-
-        if (incomingLayerContent != null && !incomingLayerContent.IsEmpty)
-        {
-            ApplyLayerContentToRoot(
-                incomingThemeRoot,
-                incomingLayerContent,
-                nextStartX + incomingLayerContent.LocalOffset.x
-            );
-        }
-        else
-        {
-            ClearRoot(incomingThemeRoot);
-        }
+        ApplyLayerContentToRoot(incomingThemeRoot, incomingLayerContent, seamX);
+        ApplyTransitionContentToRoot(transitionRoot, transitionLayerContent, seamX);
 
         currentState = ParallaxLayerState.Transitioning;
     }
@@ -232,16 +207,20 @@ public sealed class ParallaxLayerController : MonoBehaviour
         float scrollAmount = testScrollSpeed * speedFactor * Time.deltaTime;
 
         MoveRootChildrenLeft(activeThemeRoot, scrollAmount);
-        MoveRootChildrenLeft(transitionRoot, scrollAmount);
         MoveRootChildrenLeft(incomingThemeRoot, scrollAmount);
+        MoveRootChildrenLeft(transitionRoot, scrollAmount);
 
-        if (incomingLayerContent == null || incomingLayerContent.IsEmpty || incomingThemeRoot.childCount == 0)
+        if (incomingThemeRoot == null || incomingThemeRoot.childCount == 0)
         {
             currentState = ParallaxLayerState.FinalizeNewTheme;
             return;
         }
 
-        float targetX = GetCameraLeftEdgeX() + incomingLayerContent.LocalOffset.x;
+        float targetX = GetCameraLeftEdgeX();
+
+        if (incomingLayerContent != null)
+            targetX += incomingLayerContent.LocalOffset.x;
+
         float incomingLeftX = GetRootLeftMostX(incomingThemeRoot);
 
         if (incomingLeftX <= targetX)
@@ -332,7 +311,7 @@ public sealed class ParallaxLayerController : MonoBehaviour
         ApplyTransitionContentToRoot(root, content, GetCameraLeftEdgeX() + content.LocalOffset.x);
     }
 
-    private void ApplyTransitionContentToRoot(Transform root, LayerTransitionContent content, float startX)
+    private void ApplyTransitionContentToRoot(Transform root, LayerTransitionContent content, float seamX)
     {
         if (root == null)
             return;
@@ -343,9 +322,13 @@ public sealed class ParallaxLayerController : MonoBehaviour
             return;
 
         GameObject instance = Instantiate(content.TransitionStripPrefab, root);
-        instance.transform.localPosition = new Vector3(startX, content.LocalOffset.y, 0f);
         instance.transform.localRotation = Quaternion.identity;
         instance.transform.localScale = Vector3.one;
+
+        float width = GetLoopWidth(instance.transform);
+        float startX = seamX - (width * 0.5f) + content.LocalOffset.x;
+
+        instance.transform.localPosition = new Vector3(startX, content.LocalOffset.y, 0f);
     }
 
     private void MoveRootChildrenLeft(Transform root, float scrollAmount)

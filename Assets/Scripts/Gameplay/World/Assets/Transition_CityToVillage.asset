@@ -16,6 +16,6 @@ MonoBehaviour:
   toTheme: {fileID: 11400000, guid: 6324f8b1062d65c448ff9fe6df901d71, type: 2}
   layerContents:
   - layerIndex: 0
-    isEmpty: 1
-    transitionStripPrefab: {fileID: 0}
+    isEmpty: 0
+    transitionStripPrefab: {fileID: 3557502890803823931, guid: d54fb7a543fe90943b026fd29cc930ef, type: 3}
     localOffset: {x: 0, y: 0}

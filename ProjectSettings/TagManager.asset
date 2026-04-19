@@ -38,11 +38,53 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Background
-    uniqueID: 4087581505
-    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background_Far
+    uniqueID: 4087581505
+    locked: 0
+  - name: Background
+    uniqueID: 3716382859
+    locked: 0
+  - name: Background_Props
+    uniqueID: 2108058735
+    locked: 0
+  - name: Background_Transitions
+    uniqueID: 3644901035
+    locked: 0
+  - name: Midground_Far
+    uniqueID: 977129721
+    locked: 0
+  - name: Midground
+    uniqueID: 475922939
+    locked: 0
+  - name: Midground_Props
+    uniqueID: 1347121497
+    locked: 0
+  - name: Midground_Transitions
+    uniqueID: 1991632805
+    locked: 0
+  - name: Ground_Far
+    uniqueID: 806533983
+    locked: 0
+  - name: Ground
+    uniqueID: 456111825
+    locked: 0
+  - name: Characters
+    uniqueID: 1744871723
+    locked: 0
+  - name: Ground_Props
+    uniqueID: 3478723599
+    locked: 0
+  - name: Ground_Transitions
+    uniqueID: 3461222739
+    locked: 0
+  - name: Foreground
+    uniqueID: 829108881
+    locked: 0
+  - name: Foreground_Props
+    uniqueID: 1776148981
     locked: 0
   m_RenderingLayers:
   - Default
