@@ -3,6 +3,7 @@ using UnityEngine;
 
 public sealed class ParallaxWorld : MonoBehaviour
 {
+    [SerializeField][Min(0f)] private float worldScrollSpeed = 2f;
     [SerializeField] private WorldThemeManager themeManager;
     [SerializeField] private List<ParallaxLayerController> layers = new();
 
@@ -35,6 +36,17 @@ public sealed class ParallaxWorld : MonoBehaviour
                     layers.Add(layer);
             }
         }
+    }
+
+    private void Update()
+    {
+        if (themeManager == null)
+            return;
+
+        if (themeChangeInProgress)
+            return;
+
+        themeManager.AddDistance(worldScrollSpeed * Time.deltaTime);
     }
 
     public void RegisterLayer(ParallaxLayerController layer)

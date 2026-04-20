@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Theme_Village
   m_EditorClassIdentifier: Assembly-CSharp::ThemeDefinition
   themeId: Village
-  minDistanceToChange: 25
+  minDistanceToChange: 20
   maxDistanceToChange: 40
   allowedNextThemes:
   - theme: {fileID: 11400000, guid: 79c148087b0ace7408b4979e42772c18, type: 2}
     weight: 1
   layerContents:
+  - {fileID: 11400000, guid: 171d02b871324fd45b4b756f461d1b4e, type: 2}
   - {fileID: 11400000, guid: 8e887352e5b10d34baeb890c6734ec3a, type: 2}
+  - {fileID: 11400000, guid: 80cc5edf188630b4580c0971f24cf769, type: 2}

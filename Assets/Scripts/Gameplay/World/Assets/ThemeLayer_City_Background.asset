@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17817826118d6064599c5b338833bf0f, type: 3}
   m_Name: ThemeLayer_City_Background
   m_EditorClassIdentifier: Assembly-CSharp::ThemeLayerContent
-  layerIndex: 0
+  layerIndex: 1
   isEmpty: 0
-  seamlessStripPrefab: {fileID: 5417581194455616936, guid: c7d0f5de321ac5f49a3d0400fa390f8d, type: 3}
+  seamlessStripPrefab: {fileID: 5978350948916782248, guid: 2d57530548cfa5a419154b3d05accab3, type: 3}
   spawnSetPrefab: {fileID: 0}
-  localOffset: {x: 0, y: 0}
+  localOffset: {x: 0, y: -0.5}

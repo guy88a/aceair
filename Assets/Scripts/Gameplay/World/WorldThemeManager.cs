@@ -18,6 +18,8 @@ public sealed class WorldThemeManager : MonoBehaviour
     [SerializeField][Min(0f)] private float distanceTarget;
     [SerializeField] private bool themeChangeInProgress;
 
+    private bool isInitialized;
+
     public ThemeDefinition CurrentTheme => currentTheme;
     public ThemeDefinition PendingTheme => pendingTheme;
     public float DistanceSinceActivation => distanceSinceActivation;
@@ -35,6 +37,9 @@ public sealed class WorldThemeManager : MonoBehaviour
         if (startingTheme == null || parallaxWorld == null)
             return;
 
+        // Hard reset any leftover runtime/debug state.
+        debugRequestNextTheme = false;
+
         currentTheme = startingTheme;
         pendingTheme = null;
         themeChangeInProgress = false;
@@ -42,10 +47,20 @@ public sealed class WorldThemeManager : MonoBehaviour
         distanceTarget = currentTheme.RollDistanceTarget();
 
         parallaxWorld.ApplyInitialTheme(currentTheme);
+
+        isInitialized = true;
+
+        Debug.Log(
+            $"[WorldThemeManager] Start -> Theme: {currentTheme.name}, DistanceTarget: {distanceTarget}",
+            this
+        );
     }
 
     private void Update()
     {
+        if (!isInitialized)
+            return;
+
         if (!debugRequestNextTheme)
             return;
 
@@ -55,10 +70,13 @@ public sealed class WorldThemeManager : MonoBehaviour
 
     public void AddDistance(float deltaDistance)
     {
+        if (!isInitialized)
+            return;
+
         if (themeChangeInProgress || currentTheme == null || deltaDistance <= 0f)
             return;
 
-        distanceSinceActivation += deltaDistance;   
+        distanceSinceActivation += deltaDistance;
 
         if (distanceSinceActivation >= distanceTarget)
             RequestNextTheme();
@@ -66,6 +84,9 @@ public sealed class WorldThemeManager : MonoBehaviour
 
     public void RequestNextTheme()
     {
+        if (!isInitialized)
+            return;
+
         if (themeChangeInProgress || currentTheme == null || parallaxWorld == null)
             return;
 
@@ -85,6 +106,11 @@ public sealed class WorldThemeManager : MonoBehaviour
 
         pendingTheme = nextTheme;
         themeChangeInProgress = true;
+
+        Debug.Log(
+            $"[WorldThemeManager] Theme change requested: {currentTheme.name} -> {nextTheme.name}",
+            this
+        );
 
         parallaxWorld.RequestThemeChange(nextTheme, transition);
     }
@@ -127,5 +153,10 @@ public sealed class WorldThemeManager : MonoBehaviour
         themeChangeInProgress = false;
         distanceSinceActivation = 0f;
         distanceTarget = currentTheme.RollDistanceTarget();
+
+        Debug.Log(
+            $"[WorldThemeManager] Theme change completed. New Theme: {currentTheme.name}, New Target: {distanceTarget}",
+            this
+        );
     }
 }

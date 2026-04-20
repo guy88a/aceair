@@ -197,13 +197,39 @@ public sealed class ParallaxLayerController : MonoBehaviour
         MoveRootChildrenLeft(incomingThemeRoot, scrollAmount);
         MoveRootChildrenLeft(transitionRoot, scrollAmount);
 
-        if (incomingThemeRoot == null || incomingThemeRoot.childCount == 0)
+        bool hasActiveVisual = activeThemeRoot != null && activeThemeRoot.childCount > 0;
+        bool hasIncomingVisual = incomingThemeRoot != null && incomingThemeRoot.childCount > 0;
+        bool hasTransitionVisual = transitionRoot != null && transitionRoot.childCount > 0;
+
+        float cameraLeftEdge = GetCameraLeftEdgeX();
+
+        if (!hasIncomingVisual)
         {
+            if (hasTransitionVisual)
+            {
+                float transitionRightEdge = GetRootRightEdge(transitionRoot);
+
+                if (transitionRightEdge <= cameraLeftEdge)
+                    currentState = ParallaxLayerState.FinalizeNewTheme;
+
+                return;
+            }
+
+            if (hasActiveVisual)
+            {
+                float outgoingRightEdge = GetRootRightEdge(activeThemeRoot);
+
+                if (outgoingRightEdge <= cameraLeftEdge)
+                    currentState = ParallaxLayerState.FinalizeNewTheme;
+
+                return;
+            }
+
             currentState = ParallaxLayerState.FinalizeNewTheme;
             return;
         }
 
-        float targetX = GetCameraLeftEdgeX();
+        float targetX = cameraLeftEdge;
 
         if (incomingLayerContent != null)
             targetX += incomingLayerContent.LocalOffset.x;
@@ -212,6 +238,16 @@ public sealed class ParallaxLayerController : MonoBehaviour
 
         if (incomingLeftX <= targetX)
             currentState = ParallaxLayerState.FinalizeNewTheme;
+    }
+
+    private float GetCameraRightEdgeX()
+    {
+        Camera cam = Camera.main;
+
+        if (cam == null || !cam.orthographic)
+            return 0f;
+
+        return cam.transform.position.x + (GetCameraWorldWidth() * 0.5f);
     }
 
     private void FinalizeThemeSwap()
@@ -330,7 +366,7 @@ public sealed class ParallaxLayerController : MonoBehaviour
     private float GetRootRightEdge(Transform root)
     {
         if (root == null || root.childCount == 0)
-            return GetCameraLeftEdgeX();
+            return GetCameraRightEdgeX();
 
         float rightEdge = float.MinValue;
 
@@ -349,7 +385,7 @@ public sealed class ParallaxLayerController : MonoBehaviour
         }
 
         if (rightEdge == float.MinValue)
-            return GetCameraLeftEdgeX();
+            return GetCameraRightEdgeX();
 
         return rightEdge;
     }
