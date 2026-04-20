@@ -3,7 +3,6 @@ using UnityEngine;
 public enum ParallaxLayerState
 {
     Stable,
-    WaitingForSeam,
     Transitioning,
     FinalizeNewTheme
 }
@@ -62,13 +61,6 @@ public sealed class ParallaxLayerController : MonoBehaviour
                 UpdateStableLoop();
                 break;
 
-            case ParallaxLayerState.WaitingForSeam:
-                UpdateStableLoop();
-
-                if (IsAtSafeSeamPoint())
-                    StartVisibleSwap();
-                break;
-
             case ParallaxLayerState.Transitioning:
                 UpdateTransition();
                 break;
@@ -108,9 +100,9 @@ public sealed class ParallaxLayerController : MonoBehaviour
     }
 
     public void RequestThemeChange(
-        ThemeDefinition nextTheme,
-        ThemeTransitionDefinition transition
-    )
+    ThemeDefinition nextTheme,
+    ThemeTransitionDefinition transition
+)
     {
         incomingTheme = nextTheme;
         activeTransition = transition;
@@ -124,7 +116,6 @@ public sealed class ParallaxLayerController : MonoBehaviour
             : null;
 
         completionReported = false;
-        currentState = ParallaxLayerState.WaitingForSeam;
 
         if (propSpawner != null)
         {
@@ -136,6 +127,8 @@ public sealed class ParallaxLayerController : MonoBehaviour
                     : null
             );
         }
+
+        StartVisibleSwap();
     }
 
     private void UpdateStableLoop()
@@ -185,12 +178,6 @@ public sealed class ParallaxLayerController : MonoBehaviour
         }
     }
 
-    private bool IsAtSafeSeamPoint()
-    {
-        // Base shell only.
-        // Replace this with actual seam-safe detection when the strip loop is implemented.
-        return true;
-    }
 
     private void StartVisibleSwap()
     {
