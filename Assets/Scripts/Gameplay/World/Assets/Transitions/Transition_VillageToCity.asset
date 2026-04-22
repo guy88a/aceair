@@ -22,7 +22,7 @@ MonoBehaviour:
   - layerIndex: 1
     isEmpty: 0
     transitionStripPrefab: {fileID: 3579914864287608623, guid: 884c435056578194bb4d5c33df6bf3fd, type: 3}
-    localOffset: {x: 0, y: 0}
+    localOffset: {x: 0, y: -0.4}
   - layerIndex: 2
     isEmpty: 0
     transitionStripPrefab: {fileID: 7896596490866544363, guid: 1ef31ded457db994c9fa74d9396ad040, type: 3}

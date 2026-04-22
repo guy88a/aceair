@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 27b2255eaa963e3469d006517a36e3f3
+guid: f29b06b2d031da047b58b23819baafab
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7818618265759702861
-    second: transition_far_ground_0
+      213: -7590627029923415589
+    second: transition_far_ground 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: transition_far_ground_0
+      name: transition_far_ground 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d4fdcfc43ef418c60800000000000000
-      internalID: 7818618265759702861
+      spriteID: bd9bfe2eeeca8a690800000000000000
+      internalID: -7590627029923415589
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      transition_far_ground_0: 7818618265759702861
+      transition_far_ground 1_0: -7590627029923415589
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

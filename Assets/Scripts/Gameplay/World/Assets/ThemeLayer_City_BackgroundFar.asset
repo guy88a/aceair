@@ -16,4 +16,4 @@ MonoBehaviour:
   isEmpty: 0
   seamlessStripPrefab: {fileID: 5417581194455616936, guid: c7d0f5de321ac5f49a3d0400fa390f8d, type: 3}
   spawnSetPrefab: {fileID: 0}
-  localOffset: {x: 0, y: 0}
+  localOffset: {x: 0, y: 0.3}
