@@ -3,6 +3,7 @@ using UnityEngine;
 public enum ParallaxLayerState
 {
     Stable,
+    WaitingForTransitionReposition,
     Transitioning,
     FinalizeNewTheme
 }
@@ -58,6 +59,7 @@ public sealed class ParallaxLayerController : MonoBehaviour
         switch (currentState)
         {
             case ParallaxLayerState.Stable:
+            case ParallaxLayerState.WaitingForTransitionReposition:
                 UpdateStableLoop();
                 break;
 
@@ -128,7 +130,10 @@ public sealed class ParallaxLayerController : MonoBehaviour
             );
         }
 
-        StartVisibleSwap();
+        if (CanWaitForLoopReposition())
+            currentState = ParallaxLayerState.WaitingForTransitionReposition;
+        else
+            StartVisibleSwap();
     }
 
     private void UpdateStableLoop()
@@ -137,7 +142,12 @@ public sealed class ParallaxLayerController : MonoBehaviour
             return;
 
         if (activeThemeRoot.childCount == 0)
+        {
+            if (currentState == ParallaxLayerState.WaitingForTransitionReposition)
+                StartVisibleSwap();
+
             return;
+        }
 
         float scrollAmount = testScrollSpeed * speedFactor * Time.deltaTime;
 
@@ -146,6 +156,7 @@ public sealed class ParallaxLayerController : MonoBehaviour
 
         float cameraLeftEdge = GetCameraLeftEdgeX();
         float rightMostX = float.MinValue;
+        bool repositionedThisFrame = false;
 
         for (int i = 0; i < activeThemeRoot.childCount; i++)
         {
@@ -174,10 +185,38 @@ public sealed class ParallaxLayerController : MonoBehaviour
                 );
 
                 rightMostX = child.localPosition.x;
+                repositionedThisFrame = true;
             }
+        }
+
+        if (
+            currentState == ParallaxLayerState.WaitingForTransitionReposition &&
+            repositionedThisFrame
+        )
+        {
+            StartVisibleSwap();
         }
     }
 
+    private bool CanWaitForLoopReposition()
+    {
+        if (activeThemeRoot == null)
+            return false;
+
+        if (activeThemeRoot.childCount == 0)
+            return false;
+
+        if (testScrollSpeed * speedFactor <= 0f)
+            return false;
+
+        for (int i = 0; i < activeThemeRoot.childCount; i++)
+        {
+            if (GetLoopWidth(activeThemeRoot.GetChild(i)) > 0f)
+                return true;
+        }
+
+        return false;
+    }
 
     private void StartVisibleSwap()
     {
